@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Webgl Sample</title>
+    <script src="minMatrix.js"></script>
+    <script src="webgl.js"></script>
+
+    <script id="vs" type="x-shader/x-vertex">#version 300 es
+      layout (location = 0) in vec3 position;
+      layout (location = 1) in vec3 normal;
+      layout (location = 2) in vec4 color;
+      uniform   mat4 mvpMatrix;
+      uniform   mat4 invMatrix;
+      uniform   float vertexAlpha;
+      uniform   int  blender;
+      uniform   vec3 lightDirection;
+      uniform   vec3 eyeDirection;
+      uniform   vec4 ambientColor;
+      out   vec4 vColor;
+      
+      void main(void){
+        vec3 invLight  = normalize(invMatrix * vec4(lightDirection, 0.0)).xyz;
+        vec3 invEye    = normalize(invMatrix * vec4(eyeDirection, 0.0)).xyz;
+        vec3 halfLE    = normalize(invLight + invEye);
+        float diffuse  = clamp(dot(normal, invLight), 0.0, 1.0);
+        float specular = pow(clamp(dot(normal, halfLE), 0.0, 1.0), 50.0);
+        vec4 light     = color * vec4(vec3(diffuse), 1.0) + vec4(vec3(specular), 1.0);
+        if(bool(blender)){
+          vColor  = vec4(color.rgb, color.a * vertexAlpha);
+        }else {
+          vColor  =  light + ambientColor;
+        }
+        gl_Position = mvpMatrix * vec4(position, 1.0);
+      }
+      </script>
+              
+      <script id="fs" type="x-shader/x-fragment">#version 300 es
+      precision highp float;
+      
+      in vec4 vColor;
+      out vec4  outColor;
+      
+      void main(void){
+          outColor = vColor;
+      }
+      </script>
+  </head>
+  <body>
+    <canvas id ="canvas"></canvas>
+  </body>
+</html>

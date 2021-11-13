@@ -87,15 +87,11 @@ window.onload = () => {
       count++;
 
       let rad = (count % 360) * Math.PI / 180;
-      let tx = Math.cos(rad) * 7.5;
-      let ty = 0;
-      let tz = Math.sin(rad) * 7.5;
 
       //vaoの生成
       gl.bindVertexArray(white_cube_vao);
 
       m.identity(mMatrix);
-      //m.rotate(mMatrix, -rad, [0, 1, 0], mMatrix);
       m.rotation(mMatrix,[0, -rad, 0],mMatrix);
       m.multiply(tmpMatrix, mMatrix, mvpMatrix);
       m.inverse(mMatrix,invMatrix);

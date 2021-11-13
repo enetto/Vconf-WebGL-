@@ -130,8 +130,8 @@ function matIV(){
           x2 = mat[4], y2 = mat[5], z2 = mat[6],  w2 = mat[7],
           x3 = mat[8], y3 = mat[9], z3 = mat[10], w3 = mat[11];
 
-    const sinx = Math.sin(ax), siny = Math.sin(angle[1]), sinz = Math.sin(az), 
-          cosx = Math.cos(ax), cosy = Math.cos(angle[1]), cosz = Math.cos(az);
+    const sinx = Math.sin(ax), siny = Math.sin(ay), sinz = Math.sin(az), 
+          cosx = Math.cos(ax), cosy = Math.cos(ay), cosz = Math.cos(az);
 
           if(angle){
             if(mat != dest){
@@ -372,6 +372,40 @@ function qtnIV(){
     dest[3] = Math.cos(angle * 0.5);
     return dest;
   };
+  //クォータニオン
+  this.rotation = (mat, q4, angle, dest) => {
+    let sq = Math.sqrt(q4[0] * q4[0] + q4[1] * q4[1] + q4[2] * q4[2]);
+    if(!sq){return null;}
+    const s = Math.sin(angle * 0.5);
+    let qx = q4[0], qy = q4[1] , qz = q4[2] , qw = q4[3];
+    if(sq != 1){sq = 1 / sq; qx *= sq; qy *= sq; qz *= sq;}
+
+    qx *= s; 
+    qy *= s; 
+    qz *= s;
+    qw = Math.cos(angle * 0.5);
+
+    const x1 = mat[0], y1 = mat[1], z1 = mat[2],  w1 = mat[3],
+          x2 = mat[4], y2 = mat[5], z2 = mat[6],  w2 = mat[7],
+          x3 = mat[8], y3 = mat[9], z3 = mat[10], w3 = mat[11];
+    
+    dest[0] = x1 * (qx * qx + qy * qy - qz * qz - qw * qw) + x2 * (2 * (qy * qz + qx * qw) ) + x3 * (2 * (qy * qw - qx * qz));
+    dest[1] = y1 * (qx * qx + qy * qy - qz * qz - qw * qw) + y2 * (2 * (qy * qz + qx * qw) ) + y3 * (2 * (qy * qw - qx * qz));
+    dest[2] = z1 * (qx * qx + qy * qy - qz * qz - qw * qw) + z2 * (2 * (qy * qz + qx * qw) ) + z3 * (2 * (qy * qw - qx * qz));
+    dest[3] = 0;
+
+    dest[4] = x1 * (2 * (qy * qz - qx * qw)) + x2 * (qx * qx - qy * qy + qz * qz - qw * qw) + x3 * (2 * (qz * qw + qx * qy));
+    dest[5] = y1 * (2 * (qy * qz - qx * qw)) + y2 * (qx * qx - qy * qy + qz * qz - qw * qw) + y3 * (2 * (qz * qw + qx * qy));
+    dest[6] = z1 * (2 * (qy * qz - qx * qw)) + z2 * (qx * qx - qy * qy + qz * qz - qw * qw) + z3 * (2 * (qz * qw + qx * qy));
+    dest[7] = 0;
+
+    dest[8] = x1 * (2 * (qy * qw + qx * qz)) + x2 * (2 * (qz * qw - qx * qy)) + x3 * (qx * qx - qy * qy - qz * qz + qw * qw);
+    dest[9] = y1 * (2 * (qy * qw + qx * qz)) + y2 * (2 * (qz * qw - qx * qy)) + y3 * (qx * qx - qy * qy - qz * qz + qw * qw);
+    dest[10] = z1 * (2 * (qy * qw + qx * qz)) + z2 * (2 * (qz * qw - qx * qy)) + z3 * (qx * qx - qy * qy - qz * qz + qw * qw);
+    dest[11] = 0; 
+
+    return dest;
+  }
   this.toVecIII = function(vec, qtn, dest){
     var qp = this.create();
     var qq = this.create();

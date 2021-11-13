@@ -40,7 +40,7 @@ window.onload = () => {
     let mMatrix = m.identity(m.create());
     let vMatrix = m.identity(m.create());
     let pMatrix = m.identity(m.create());
-    let qMatrix = q.identity(q.create());
+    let qMatrix = m.identity(m.create());
     let mvpMatrix = m.identity(m.create());
     let tmpMatrix = m.identity(m.create());
     let invMatrix = m.identity(m.create());
@@ -89,15 +89,14 @@ window.onload = () => {
       count++;
 
       let rad = (count % 360) * Math.PI / 180;
-      let tx = Math.cos(rad) * 7.5;
-      let ty = 0;
-      let tz = Math.sin(rad) * 7.5;
 
       //vaoの生成
       gl.bindVertexArray(white_cube_vao);
-      m.rotationY(mMatrix, rad, mMatrix);
-      m.multiply(tmpMatrix, mMatrix, mvpMatrix);
-      m.inverse(mMatrix,invMatrix);
+
+      m.identity(qMatrix);
+      q.rotation(qMatrix,[0, 1, 0, 1], rad, qMatrix);
+      m.multiply(tmpMatrix, qMatrix, mvpMatrix);
+      m.inverse(qMatrix,invMatrix);
 
       gl.disable(gl.BLEND);
 
@@ -114,6 +113,7 @@ window.onload = () => {
       gl.flush();
       requestAnimationFrame(counter);
     }
+    console.log(qMatrix);
 
     counter();
 
